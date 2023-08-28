@@ -17,9 +17,8 @@ return new class extends Migration
             $table->string('file');
             $table->mediumInteger('type')->nullable();
             $table->mediumInteger('status')->nullable();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('to')->nullable()->constrained('titleholders')->nullOnDelete();
+            $table->foreignId('titleholder_id')->nullable()->constrained('titleholders')->nullOnDelete();
             $table->foreignId('peiroow_letter_id')->nullable()->constrained('letters')->nullOnDelete();
             $table->timestamps();
         });

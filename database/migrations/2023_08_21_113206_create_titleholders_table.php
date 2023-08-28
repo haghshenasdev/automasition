@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('official');
             $table->char('phone',11)->nullable();
-            $table->foreignId('organ')->constrained('organs')->cascadeOnDelete();
+            $table->foreignId('organ_id')->constrained('organs')->cascadeOnDelete();
             $table->timestamps();
         });
     }

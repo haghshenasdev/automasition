@@ -6,10 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class letter extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'subject',
+        'file',
+        'type',
+        'status',
+        'user_id',
+        'titleholder_id',
+        'peiroow_letter_id',
+    ];
+
+    public function letter(): BelongsTo
+    {
+        return $this->belongsTo(letter::class,'peiroow_letter_id');
+    }
 
     public function customers(): BelongsToMany
     {
