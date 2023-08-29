@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->index();
-            $table->timestamp('birth_date')->nullable();
-            $table->char('code_melli',10);
+            $table->date('birth_date')->nullable();
+            $table->char('code_melli',10)->unique();
             $table->char('phone',11);
             $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
             $table->timestamps();

@@ -10,6 +10,13 @@ class Appendix extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'file',
+        'title',
+    ];
+
+    protected $table = 'appendices';
+
     public function letter(): BelongsTo
     {
         return $this->belongsTo(letter::class);

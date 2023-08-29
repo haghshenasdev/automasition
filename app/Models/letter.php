@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class letter extends Model
@@ -40,5 +41,15 @@ class letter extends Model
     public function titleholder(): BelongsTo
     {
         return $this->belongsTo(Titleholder::class);
+    }
+
+    public function Answer(): HasMany
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+    public function Appendix(): HasMany
+    {
+        return $this->hasMany(Appendix::class);
     }
 }

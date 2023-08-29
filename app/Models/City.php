@@ -4,14 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class City extends Model
 {
     use HasFactory;
 
-    public function Customer(): HasOne
+    protected $fillable = [
+        'name'
+    ];
+
+    public $timestamps = false;
+
+    public function customers(): HasMany
     {
-        return $this->HasOne(Customer::class);
+        return $this->hasMany(Customer::class);
     }
 }

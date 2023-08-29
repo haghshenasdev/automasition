@@ -80,9 +80,41 @@ class LetterResource extends Resource
                     ]),
 
                 Select::make('customers')
+                    ->label('صاحب')
                     ->multiple()
+                    ->required()
                     ->relationship(null,'name')
                     ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->label('نام و نام خانوادگی')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('code_melli')
+                            ->required()
+                            ->unique()
+                            ->numeric()
+                            ->label('کد ملی'),
+                        Forms\Components\DatePicker::make('birth_date')
+                            ->label('تاریخ تولد')
+                        ,
+                        Forms\Components\TextInput::make('phone')
+                            ->label('شماره تماس')
+                            ->required()
+                            ->tel(),
+                        Forms\Components\Select::make('city_id')
+                            ->label('شهر')
+                            ->relationship('city', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->label('نام شهر')
+                                ,
+                            ])
+                        ,
+                    ])
                 ,
                 Forms\Components\Select::make('type')
                     ->options([
@@ -91,7 +123,14 @@ class LetterResource extends Resource
                          1 => 'شرکت یا کارگاه',
                     ])->label('نوع'),
                 FileUpload::make('file')
-                    ->disk('local')
+                    ->label('فایل')
+                    ->disk('private')
+                    ->downloadable()
+                    ->directory('letters')
+                    ->visibility('private')
+                    ->preserveFilenames()
+                    ->image()
+                    ->imageEditor()
                     ->required()
                 ,
                 Forms\Components\Select::make('peiroow_letter_id')
@@ -99,36 +138,7 @@ class LetterResource extends Resource
                     ->relationship('letter', 'subject')
                     ->searchable()
                     ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->label('نام')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('official')
-                            ->required()
-                            ->label('سمت'),
-                        Forms\Components\TextInput::make('phone')
-                            ->label('شماره تماس')
-                            ->tel(),
-                        Forms\Components\Select::make('organ_id')
-                            ->label('اداره')
-                            ->relationship('organ', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->label('نام')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('address')
-                                    ->required()
-                                    ->label('آدرس'),
-                                Forms\Components\TextInput::make('phone')
-                                    ->label('شماره تماس')
-                                    ->tel(),
-                            ]),
-                    ]),
+                ,
             ]);
     }
 
@@ -157,6 +167,8 @@ class LetterResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\AppendixRelationManager::class,
+            RelationManagers\AnswerRelationManager::class,
         ];
     }
 
