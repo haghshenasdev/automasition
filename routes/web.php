@@ -20,11 +20,19 @@ Route::get('/', function () {
 
 Route::get('/private-dl',function (){
     $path = request()->get('path');
-    return Storage::disk('private')->download(
-        $path,basename($path),[
-            'Content-Length' => Storage::disk('private')->size($path)
-        ]
-    );
+    if (!Storage::disk('private')->exists($path)) {
+        abort(404);
+    }
+
+    $path = config('filesystems.disks.private.root') . DIRECTORY_SEPARATOR . $path;
+
+    return response()->file($path);
+// for download
+//    return Storage::disk('private')->download(
+//        $path,basename($path),[
+//            'Content-Length' => Storage::disk('private')->size($path)
+//        ]
+//    );
 })->middleware('auth');
 
 Route::get('/login',function (){
