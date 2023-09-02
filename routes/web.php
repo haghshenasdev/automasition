@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,8 +20,8 @@ Route::get('/', function () {
     return redirect('admin');
 });
 
-Route::get('/private-dl',function (){
-    $path = request()->get('path');
+Route::get('/private-dl/{path}',function ($path){
+//    $path = request()->get('path');
     if (!Storage::disk('private')->exists($path)) {
         abort(404);
     }
@@ -33,7 +35,7 @@ Route::get('/private-dl',function (){
 //            'Content-Length' => Storage::disk('private')->size($path)
 //        ]
 //    );
-})->middleware('auth');
+})->middleware('auth')->where('path', '.*');;
 
 Route::get('/login',function (){
     return redirect('admin');

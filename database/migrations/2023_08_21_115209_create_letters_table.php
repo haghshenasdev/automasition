@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('letters', function (Blueprint $table) {
             $table->id();
             $table->string('subject')->index();
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->mediumInteger('type')->nullable();
             $table->mediumInteger('status')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();

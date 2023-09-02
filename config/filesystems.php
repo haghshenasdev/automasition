@@ -38,7 +38,7 @@ return [
         'private' => [
             'driver' => 'local',
             'root' => storage_path('app'),
-            'url' => env('APP_URL').'/private-dl?path=',
+            'url' => env('APP_URL').'/private-dl/',
             'throw' => false,
         ],
         'public' => [

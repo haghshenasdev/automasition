@@ -21,7 +21,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class LetterResource extends Resource
 {
@@ -40,45 +42,13 @@ class LetterResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('subject')
-                    ->label('موضوع')
-                    ->required(),
-                Forms\Components\Select::make('titleholder_id')
-                    ->label('به')
-                    ->relationship('titleholder', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->label('نام')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('official')
-                            ->required()
-                            ->label('سمت'),
-                        Forms\Components\TextInput::make('phone')
-                            ->label('شماره تماس')
-                            ->tel(),
-                        Forms\Components\Select::make('organ_id')
-                            ->label('اداره')
-                            ->relationship('organ', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->label('نام')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('address')
-                                    ->required()
-                                    ->label('آدرس'),
-                                Forms\Components\TextInput::make('phone')
-                                    ->label('شماره تماس')
-                                    ->tel(),
-                            ]),
-                    ]),
-
+                Forms\Components\Select::make('type')
+                    ->options([
+                        null => 'شخصی',
+                        0 => 'عمومی',
+                        1 => 'شرکت یا کارگاه',
+                    ])->label('نوع')->default(null)
+                ,
                 Select::make('customers')
                     ->label('صاحب')
                     ->multiple()
@@ -116,29 +86,60 @@ class LetterResource extends Resource
                         ,
                     ])
                 ,
-                Forms\Components\Select::make('type')
-                    ->options([
-                        null => 'شخصی',
-                         0 => 'عمومی',
-                         1 => 'شرکت یا کارگاه',
-                    ])->label('نوع'),
-                FileUpload::make('file')
-                    ->label('فایل')
-                    ->disk('private')
-                    ->downloadable()
-                    ->directory('letters')
-                    ->visibility('private')
-                    ->preserveFilenames()
-                    ->image()
-                    ->imageEditor()
-                    ->required()
-                ,
+                Forms\Components\TextInput::make('subject')
+                    ->label('موضوع')
+                    ->required(),
+                Forms\Components\Select::make('titleholder_id')
+                    ->label('گیرنده نامه')
+                    ->relationship('titleholder', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->label('نام')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('official')
+                            ->required()
+                            ->label('سمت'),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('شماره تماس')
+                            ->tel(),
+                        Forms\Components\Select::make('organ_id')
+                            ->label('اداره')
+                            ->relationship('organ', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->label('نام')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('address')
+                                    ->required()
+                                    ->label('آدرس'),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('شماره تماس')
+                                    ->tel(),
+                            ]),
+                    ]),
                 Forms\Components\Select::make('peiroow_letter_id')
                     ->label('پیرو')
                     ->relationship('letter', 'subject')
                     ->searchable()
                     ->preload()
                 ,
+                FileUpload::make('file')
+                    ->label('فایل')
+                    ->disk('private')
+                    ->downloadable()
+                    ->getUploadedFileNameForStorageUsing(static fn (TemporaryUploadedFile $file,?Model $record) => "{$record->id}/{$record->id}." . explode('/',$file->getMimeType())[1])
+                    ->directory('letters')
+                    ->visibility('private')
+                    ->preserveFilenames()
+                    ->imageEditor()
+                    ->hiddenOn('create'),
             ]);
     }
 
@@ -180,4 +181,5 @@ class LetterResource extends Resource
             'edit' => Pages\EditLetter::route('/{record}/edit'),
         ];
     }
+
 }

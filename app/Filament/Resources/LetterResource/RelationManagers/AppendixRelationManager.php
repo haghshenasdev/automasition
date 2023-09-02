@@ -9,7 +9,11 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class AppendixRelationManager extends RelationManager
 {
@@ -36,14 +40,26 @@ class AppendixRelationManager extends RelationManager
                     ->label('فایل')
                     ->disk('private')
                     ->downloadable()
-                    ->directory('appendices')
+                    ->directory('letters')
                     ->visibility('private')
                     ->preserveFilenames()
-                    ->image()
                     ->imageEditor()
                     ->required()
+                    ->getUploadedFileNameForStorageUsing( fn (TemporaryUploadedFile $file,?Model $record) => $this->getFileNamePath($file,$record))
                 ,
             ]);
+    }
+
+    private function getFileNamePath(TemporaryUploadedFile $file,?Model $record) : string
+    {
+        $ownerId = $this->ownerRecord->id;
+        $path = "{$ownerId}/appendices";
+        $FPath= config('filesystems.disks.private.root'). '/letters/' . $path;
+        File::ensureDirectoryExists($FPath);
+
+        return "{$path}/apd-{$ownerId}-".
+            (($record == null) ? count(scandir($FPath)) -2 : $record->id ) .
+            "." . explode('/',$file->getMimeType())[1];
     }
 
     public function table(Table $table): Table
