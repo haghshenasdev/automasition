@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\File;
 
 class letter extends Model
 {
@@ -51,5 +52,18 @@ class letter extends Model
     public function Appendix(): HasMany
     {
         return $this->hasMany(Appendix::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::deleted(function (letter $letter) {
+            File::deleteDirectory(
+                config('filesystems.disks.private.root')
+                . DIRECTORY_SEPARATOR .
+                'letters'
+                . DIRECTORY_SEPARATOR .
+                $letter->id
+            );
+        });
     }
 }
