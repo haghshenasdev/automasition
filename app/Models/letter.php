@@ -17,7 +17,7 @@ class letter extends Model
     protected $fillable = [
         'subject',
         'file',
-        'type',
+        'type_id',
         'status',
         'user_id',
         'titleholder_id',
@@ -32,6 +32,16 @@ class letter extends Model
     public function customers(): BelongsToMany
     {
         return $this->belongsToMany(Customer::class);
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class,'cartables');
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(Type::class);
     }
 
     public function user(): BelongsTo
@@ -54,16 +64,34 @@ class letter extends Model
         return $this->hasMany(Appendix::class);
     }
 
+    public function getFilePath() : string|null
+    {
+        return (is_null($this->file)) ? null : $this->id.'/'.$this->id.'.'.$this->file;
+    }
+
+    public static function getFilePathByArray(Array $record) : string|null
+    {
+        return (is_null($record['file'])) ? null : $record['id'].'/'.$record['id'].'.'.$record['file'];
+    }
+
     protected static function booted(): void
     {
         static::deleted(function (letter $letter) {
             File::deleteDirectory(
                 config('filesystems.disks.private.root')
                 . DIRECTORY_SEPARATOR .
-                'letters'
-                . DIRECTORY_SEPARATOR .
                 $letter->id
             );
+        });
+
+        static::updating(function (letter $letter) {
+            if (!is_null($letter->getOriginal('file')) && $letter->file != $letter->getOriginal('file')) {
+                File::delete(
+                    config('filesystems.disks.private.root')
+                    . DIRECTORY_SEPARATOR .
+                    self::getFilePathByArray($letter->getOriginal())
+                );
+            }
         });
     }
 }

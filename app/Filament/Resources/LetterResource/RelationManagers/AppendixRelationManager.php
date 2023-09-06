@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -40,7 +41,6 @@ class AppendixRelationManager extends RelationManager
                     ->label('فایل')
                     ->disk('private')
                     ->downloadable()
-                    ->directory('letters')
                     ->visibility('private')
                     ->preserveFilenames()
                     ->imageEditor()
@@ -50,15 +50,16 @@ class AppendixRelationManager extends RelationManager
             ]);
     }
 
+
     private function getFileNamePath(TemporaryUploadedFile $file,?Model $record) : string
     {
         $ownerId = $this->ownerRecord->id;
-        $path = "{$ownerId}/appendices";
-        $FPath= config('filesystems.disks.private.root'). '/letters/' . $path;
-        File::ensureDirectoryExists($FPath);
-
+        $path = "{$ownerId}/apds";
+//        $FPath= config('filesystems.disks.private.root'). $path;
+//        File::ensureDirectoryExists($FPath);
+//        (($record == null) ? count(scandir($FPath)) -2 : $record->id )
         return "{$path}/apd-{$ownerId}-".
-            (($record == null) ? count(scandir($FPath)) -2 : $record->id ) .
+            Date::now()->format('Y-m-d_H-i-s') .
             "." . explode('/',$file->getMimeType())[1];
     }
 
@@ -68,7 +69,6 @@ class AppendixRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 Tables\Columns\TextColumn::make('title')->label('عنوان'),
-                Tables\Columns\ImageColumn::make('file')->label('تصویر')->disk('private'),
             ])
             ->filters([
                 //

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('subject')->index();
             $table->string('file')->nullable();
-            $table->mediumInteger('type')->nullable();
+            $table->foreignId('type_id')->nullable()->constrained('types')->nullOnDelete();
             $table->mediumInteger('status')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('titleholder_id')->nullable()->constrained('titleholders')->nullOnDelete();
