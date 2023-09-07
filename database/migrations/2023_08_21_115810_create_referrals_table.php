@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('referrals', function (Blueprint $table) {
             $table->id();
             $table->text('rule')->nullable(); // dastoor
-            $table->foreignId('by_user')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('to_user')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('by_user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('to_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('letter_id')->constrained('letters')->cascadeOnDelete();
             $table->timestamps();
         });

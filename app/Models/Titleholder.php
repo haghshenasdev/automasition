@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Titleholder extends Model
 {
@@ -20,5 +21,10 @@ class Titleholder extends Model
     public function organ(): BelongsTo
     {
         return $this->belongsTo(Organ::class);
+    }
+
+    public function Replications(): HasMany
+    {
+        return $this->hasMany(Replication::class);
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('replications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('letter_id')->constrained('letters')->cascadeOnDelete();
-            $table->foreignId('to')->constrained('titleholders')->cascadeOnDelete();
+            $table->foreignId('titleholder_id')->constrained('titleholders')->cascadeOnDelete();
             $table->timestamps();
         });
     }

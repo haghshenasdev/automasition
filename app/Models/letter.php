@@ -59,6 +59,16 @@ class letter extends Model
         return $this->hasMany(Answer::class);
     }
 
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(Referral::class);
+    }
+
+    public function replications(): HasMany
+    {
+        return $this->hasMany(Replication::class);
+    }
+
     public function Appendix(): HasMany
     {
         return $this->hasMany(Appendix::class);

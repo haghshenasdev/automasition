@@ -47,9 +47,10 @@ class Appendix extends Model
             $letterId = $model->letter()->get('id')->first()->id;
             $fileFormat = explode('.',$model->file)[1];
             $newPath = $path . $letterId."/apds/apd-".$letterId.'-'.$model->id."." . $fileFormat;
-            File::move($path . $model->file,$newPath);
-            $model->file = $fileFormat;
-            $model->save();
+            if (File::move($path . $model->file,$newPath)){
+                $model->file = $fileFormat;
+                $model->save();
+            }
         });
         static::deleted(function (Appendix $model) {
             $letterId = $model->letter()->get('id')->first()->id;

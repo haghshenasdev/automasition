@@ -224,8 +224,10 @@ class LetterResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\ReferralsRelationManager::class,
             RelationManagers\AppendixRelationManager::class,
             RelationManagers\AnswerRelationManager::class,
+            RelationManagers\ReplicationsRelationManager::class,
         ];
     }
 
