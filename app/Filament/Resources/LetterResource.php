@@ -6,9 +6,12 @@ use App\Filament\Resources\CustomerLetterResource\RelationManagers\CustomersRela
 use App\Filament\Resources\CustomerResource\RelationManagers\LettersRelationManager;
 use App\Filament\Resources\LetterResource\Pages;
 use App\Filament\Resources\LetterResource\RelationManagers;
+use App\Models\Customer;
 use App\Models\Letter;
+use App\Models\Titleholder;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -19,6 +22,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -49,12 +55,7 @@ class LetterResource extends Resource
                     ->hiddenOn('create')
                 ,
                 Forms\Components\Select::make('status')
-                    ->options([
-                        0 => 'بایگانی',
-                        1 => 'اتمام',
-                        2 => 'در حال پیگیری',
-                        3 => 'غیرقابل پیگیری',
-                    ])->label('وضعیت')
+                    ->options(letter::getStatusListDefine())->label('وضعیت')
                     ->hiddenOn('create')
                     ->default(null)
                 ,
@@ -74,6 +75,9 @@ class LetterResource extends Resource
                     ->required()
                     ->relationship(null,'name')
                     ->searchable()
+                    ->getSearchResultsUsing(fn (string $search): array => Customer::query()->where('name', 'like', "%{$search}%")->orWhere('code_melli','like',"%$search%")->selectRaw("id, concat(name, '-', code_melli) as code_name")->limit(10)->pluck('code_name', 'id')->toArray())
+//                    ->getOptionLabelsUsing(fn (array $values): array => Customer::query()->whereIn('id', $values)->selectRaw("id, concat(name, '-', code_melli) as code_name")->pluck('code_name', 'id')->toArray())
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} {$record->code_melli}")->lazy()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -85,7 +89,7 @@ class LetterResource extends Resource
                             ->numeric()
                             ->label('کد ملی'),
                         Forms\Components\DatePicker::make('birth_date')
-                            ->label('تاریخ تولد')
+                            ->label('تاریخ تولد')->jalali()
                         ,
                         Forms\Components\TextInput::make('phone')
                             ->label('شماره تماس')
@@ -111,6 +115,7 @@ class LetterResource extends Resource
                 Forms\Components\Select::make('titleholder')
                     ->label('گیرنده نامه')
                     ->relationship(null, 'name')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} - {$record->official} ، {$record->organ()->first('name')->name}")
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
@@ -169,8 +174,8 @@ class LetterResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ثبت'),
-                TextColumn::make('subject')->label('موضوع'),
+                TextColumn::make('id')->label('ثبت')->searchable(),
+                TextColumn::make('subject')->label('موضوع')->searchable(),
                 TextColumn::make('customer_id')->label('صاحب')
                     ->html()->alignCenter()
                     ->state(function (Model $record): string {
@@ -182,14 +187,57 @@ class LetterResource extends Resource
                     return $string;
                 }),
                 TextColumn::make('status')->label('وضعیت')->state(function (Model $record): string {
-                    return self::getStatusLabel($record->status);
+                    return letter::getStatusLabel($record->status);
                 }),
                 TextColumn::make('type.name')->label('نوع'),
                 TextColumn::make('user.name')->label('ثبت کننده'),
+                Tables\Columns\TextColumn::make('created_at')->label(' تاریخ ایجاد')->jalaliDateTime(),
+                Tables\Columns\TextColumn::make('updated_at')->label(' تاریخ آخرین ویرایش')->jalaliDateTime(),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('customers')
+                    ->label('صاحب')
+                    ->multiple()
+                    ->relationship('customers','name')
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $search): array => Customer::query()->where('name', 'like', "%{$search}%")->orWhere('code_melli','like',"%$search%")->selectRaw("id, concat(name, '-', code_melli) as code_name")->limit(10)->pluck('code_name', 'id')->toArray())
+                    ->getOptionLabelsUsing(fn (Model $record) => "{$record->name} {$record->code_melli}")
+                ,
+                SelectFilter::make('type')
+                    ->relationship('type','name')
+                    ->label('نوع')
+                ,
+                SelectFilter::make('status')
+                    ->options(letter::getStatusListDefine())->label('وضعیت')
+                ,
+                SelectFilter::make('titleholder')
+                    ->label('گیرنده نامه')
+                    ->relationship('titleholder', 'name')
+                    ->getOptionLabelsUsing(fn (Model $record) => "{$record->name} - {$record->official} ، {$record->organ()->first('name')->name}")
+                    ->searchable()
+                    ->preload()
+                ,
+                Filter::make('created_at')
+                    ->form([
+                        Fieldset::make('تاریخ ایجاد')->schema([
+                            DatePicker::make('created_from')->label('از')->jalali(),
+                            DatePicker::make('created_until')->label('لغایت')->jalali()
+                                ->default(now()),
+                        ]),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                ,
+            ])->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -201,24 +249,6 @@ class LetterResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
-    }
-
-    private static function getStatusLabel(int|null $i): int|string
-    {
-        $data = [
-            0 => 'بایگانی',
-            1 => 'اتمام',
-            2 => 'در حال پیگیری',
-            3 => 'غیرقابل پیگیری',
-        ];
-
-        if (array_key_exists($i,$data)){
-            return $data[$i];
-        }elseif (is_null($i)){
-            return 'بدون وضعیت';
-        }
-
-        return $i;
     }
 
     public static function getRelations(): array

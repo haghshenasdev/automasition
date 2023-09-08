@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LetterResource\RelationManagers;
 
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Form;
@@ -42,9 +43,10 @@ class AppendixRelationManager extends RelationManager
                     ->disk('private')
                     ->downloadable()
                     ->visibility('private')
-                    ->preserveFilenames()
                     ->imageEditor()
                     ->required()
+                    //->hiddenOn('aaaa')
+//                    ->getUploadedFileUsing(fn (?Model $record) => $record->getFilePath($this->ownerRecord->id))
                     ->getUploadedFileNameForStorageUsing( fn (TemporaryUploadedFile $file,?Model $record) => $this->getFileNamePath($file,$record))
                 ,
             ]);
@@ -53,14 +55,15 @@ class AppendixRelationManager extends RelationManager
 
     private function getFileNamePath(TemporaryUploadedFile $file,?Model $record) : string
     {
-        $ownerId = $this->ownerRecord->id;
-        $path = "{$ownerId}/apds";
+            $letterId = $this->ownerRecord->id;
+            $path = "{$letterId}/apds";
 //        $FPath= config('filesystems.disks.private.root'). $path;
 //        File::ensureDirectoryExists($FPath);
 //        (($record == null) ? count(scandir($FPath)) -2 : $record->id )
-        return "{$path}/apd-{$ownerId}-".
-            Date::now()->format('Y-m-d_H-i-s') .
-            "." . explode('/',$file->getMimeType())[1];
+            return "{$path}/apd-{$letterId}-".
+                Date::now()->format('Y-m-d_H-i-s') .
+                "." . explode('/',$file->getMimeType())[1];
+
     }
 
     public function table(Table $table): Table
@@ -77,7 +80,16 @@ class AppendixRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->mutateRecordDataUsing(function (array $data){
+                    $data['file'] = $this->cachedMountedTableActionRecord->getFilePath($this->ownerRecord->id);
+                    return $data;
+                })->mutateFormDataUsing(function (array $data){
+                    if ($data['file'] == $this->cachedMountedTableActionRecord->getFilePath($this->ownerRecord->id))
+                    {
+                        $data['file'] = explode('.',$data['file'])[1];
+                    }
+                    return $data;
+                }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

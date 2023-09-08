@@ -23,7 +23,7 @@ class CartableResource extends Resource
     protected static ?string $label = "کارپوشه";
 
 
-    protected static ?string $pluralModelLabel = "کارپوشه ها";
+    protected static ?string $pluralModelLabel = "کارپوشه";
 
     protected static ?string $pluralLabel = "کارپوشه";
 
