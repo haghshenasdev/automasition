@@ -13,10 +13,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
+use Phpsa\FilamentPasswordReveal\Password;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
+    protected static ?string $navigationGroup = 'سیستم';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -31,7 +35,17 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->label('نام')
+                    ->required(),
+                Forms\Components\TextInput::make('email')
+                    ->label('ایمیل')
+                    ->required(),
+                Password::make('password')->autocomplete('new_password')
+                    ->label('رمز عبور')
+                    ->generatable(true)->copyable(true)
+                    ->dehydrated(fn ($state) => filled($state))
+                ,
             ]);
     }
 

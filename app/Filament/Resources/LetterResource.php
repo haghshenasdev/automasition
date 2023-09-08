@@ -30,12 +30,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class LetterResource extends Resource
 {
     protected static ?string $model = Letter::class;
 
+    protected static ?int $navigationSort = 0;
+
     protected static ?string $label = "نامه";
+
+    protected static ?string $navigationGroup = 'نامه';
 
 
     protected static ?string $pluralModelLabel = "نامه ها";
@@ -242,6 +247,7 @@ class LetterResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                ExportBulkAction::make()->label('دریافت فایل exel'),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

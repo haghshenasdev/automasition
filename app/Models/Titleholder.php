@@ -27,4 +27,9 @@ class Titleholder extends Model
     {
         return $this->hasMany(Replication::class);
     }
+
+    public function letters(): HasMany
+    {
+        return $this->hasMany(letter::class);
+    }
 }

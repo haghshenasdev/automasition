@@ -17,6 +17,8 @@ class TitleholderResource extends Resource
 {
     protected static ?string $model = Titleholder::class;
 
+    protected static ?string $navigationGroup = 'مراجع دریافت نامه';
+
     protected static ?string $label = "صاحب منصب";
 
 
@@ -41,9 +43,10 @@ class TitleholderResource extends Resource
                     ->label('شماره تماس')
                     ->tel(),
                 Forms\Components\Select::make('organ_id')
-                    ->label('به')
+                    ->label('سازمان')
                     ->relationship('organ', 'name')
                     ->searchable()
+                    ->required()
                     ->preload()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
@@ -51,7 +54,6 @@ class TitleholderResource extends Resource
                             ->label('نام')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('address')
-                            ->required()
                             ->label('آدرس'),
                         Forms\Components\TextInput::make('phone')
                             ->label('شماره تماس')
@@ -87,7 +89,7 @@ class TitleholderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LettersRelationManager::class,
         ];
     }
 

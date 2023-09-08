@@ -17,7 +17,19 @@ class AppendixResource extends Resource
 {
     protected static ?string $model = Appendix::class;
 
+    protected static ?string $navigationGroup = 'نامه';
+
+    protected static ?int $navigationSort = 4;
+
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $label = "ضمیمه";
+
+
+    protected static ?string $pluralModelLabel = "ضمیمه ها";
+
+    protected static ?string $pluralLabel = "ضمیمه";
 
     public static function form(Form $form): Form
     {
@@ -48,14 +60,14 @@ class AppendixResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -63,5 +75,5 @@ class AppendixResource extends Resource
             'create' => Pages\CreateAppendix::route('/create'),
             'edit' => Pages\EditAppendix::route('/{record}/edit'),
         ];
-    }    
+    }
 }

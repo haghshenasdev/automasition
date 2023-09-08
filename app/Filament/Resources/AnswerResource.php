@@ -17,7 +17,19 @@ class AnswerResource extends Resource
 {
     protected static ?string $model = Answer::class;
 
+    protected static ?string $navigationGroup = 'نامه';
+
+    protected static ?int $navigationSort = 1;
+
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $label = "جواب نامه";
+
+
+    protected static ?string $pluralModelLabel = "جواب ها";
+
+    protected static ?string $pluralLabel = "جواب نامه";
 
     public static function form(Form $form): Form
     {
@@ -48,14 +60,14 @@ class AnswerResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -63,5 +75,5 @@ class AnswerResource extends Resource
             'create' => Pages\CreateAnswer::route('/create'),
             'edit' => Pages\EditAnswer::route('/{record}/edit'),
         ];
-    }    
+    }
 }

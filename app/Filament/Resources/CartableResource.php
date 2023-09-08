@@ -20,6 +20,9 @@ class CartableResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'دستور';
+
+
     protected static ?string $label = "کارپوشه";
 
 

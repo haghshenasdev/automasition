@@ -12,11 +12,17 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ReplicationResource extends Resource
 {
     protected static ?string $model = Replication::class;
+
+    protected static ?string $navigationGroup = 'نامه';
+
+    protected static ?int $navigationSort = 3;
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -41,7 +47,8 @@ class ReplicationResource extends Resource
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('titleholder.name')->label('گیرنده'),
-                TextColumn::make('letter.subject')->label('نامه'),
+                TextColumn::make('letter.id')->label('شماره نامه'),
+                TextColumn::make('letter.subject')->label('موضوع نامه'),
             ])
             ->filters([
                 //

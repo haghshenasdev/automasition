@@ -22,16 +22,30 @@ class TypeResource extends Resource
 
     protected static ?string $label = "نوع نامه";
 
+    protected static ?int $navigationSort = 2;
 
-    protected static ?string $pluralModelLabel = "نوع نامه ها";
+
+    protected static ?string $pluralModelLabel = "نوع نامه";
 
     protected static ?string $pluralLabel = "نوع نامه";
+
+    protected static ?string $navigationGroup = 'نامه';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->label('عنوان نوع')
+                ,
+                Forms\Components\TextInput::make('id')
+                    ->label('آیدی')
+                    ->readOnly()
+                    ->disabled()
+                    ->hiddenOn('create')
+                ,
             ]);
     }
 
@@ -61,7 +75,7 @@ class TypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LettersRelationManager::class,
         ];
     }
 
