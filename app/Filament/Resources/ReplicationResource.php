@@ -37,7 +37,19 @@ class ReplicationResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('letter_id')
+                    ->label('نامه')
+                    ->relationship('letter', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->id} - {$record->subject}")
+                    ->searchable()
+                    ->required()
+                    ->preload(),
+                Forms\Components\Select::make('titleholder_id')
+                    ->label('گیرنده نامه')
+                    ->relationship('titleholder', 'name')
+                    ->searchable()
+                    ->required()
+                    ->preload(),
             ]);
     }
 

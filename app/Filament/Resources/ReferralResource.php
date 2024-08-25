@@ -34,7 +34,22 @@ class ReferralResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('letter_id')
+                    ->label('نامه')
+                    ->relationship('letter', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->id} - {$record->subject}")
+                    ->searchable()
+                    ->required()
+                    ->preload(),
+                Forms\Components\TextInput::make('rule')
+                    ->label('دستور')
+                    ->maxLength(255),
+                Forms\Components\Select::make('to_user_id')
+                    ->label('به')
+                    ->relationship('users', 'name')
+                    ->searchable()
+                    ->required()
+                    ->preload(),
             ]);
     }
 
@@ -69,7 +84,12 @@ class ReferralResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function (array $data): array {
+
+                    $data['by_user_id'] = auth()->id();
+
+                    return $data;
+                }),
             ]);
     }
 
@@ -78,6 +98,14 @@ class ReferralResource extends Resource
         return [
             //
         ];
+    }
+
+    //bugg
+    protected static function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['by_user_id'] = auth()->id();
+
+        return $data;
     }
 
     public static function getPages(): array
