@@ -15,6 +15,7 @@ class Referral extends Model
         'rule',
         'by_user_id',
         'to_user_id',
+        'checked',
     ];
 
     public function letter(): BelongsTo
@@ -25,5 +26,10 @@ class Referral extends Model
     public function users(): BelongsTo
     {
         return $this->belongsTo(User::class,'to_user_id');
+    }
+
+    public function by_users(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'by_user_id');
     }
 }

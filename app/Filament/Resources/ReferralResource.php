@@ -59,14 +59,14 @@ class ReferralResource extends Resource
             ->columns([
                 TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('rule')->label('دستور'),
-                Tables\Columns\TextColumn::make('letter.subject')->label('نامه'),
+                Tables\Columns\TextColumn::make('letter_id')->label('نامه'),
                 TextColumn::make('by_user_id')->label('توسط')
                     ->state(function (Model $record): string {
-                        return $record->users()->first('name')->name; /// درست بودن رابطه چک شود
+                        return $record->by_users()->first('name')->name;
                     }),
                 Tables\Columns\TextColumn::make('to_user_id.name')->label('به')
                     ->state(function (Model $record): string {
-                        return $record->users()->first('name')->name; /// درست بودن رابطه چک شود
+                        return $record->users()->first('name')->name;
                     })
                 ,
                 Tables\Columns\TextColumn::make('created_at')->label(' تاریخ ایجاد'),
