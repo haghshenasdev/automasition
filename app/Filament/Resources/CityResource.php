@@ -34,7 +34,10 @@ class CityResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->label('نام شهر')
+                ,
             ]);
     }
 
@@ -64,7 +67,7 @@ class CityResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CustomersRelationManager::class,
         ];
     }
 
@@ -72,7 +75,7 @@ class CityResource extends Resource
     {
         return [
             'index' => Pages\ListCities::route('/'),
-            'create' => Pages\CreateCity::route('/create'),
+//            'create' => Pages\CreateCity::route('/create'),
             'edit' => Pages\EditCity::route('/{record}/edit'),
         ];
     }

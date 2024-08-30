@@ -15,6 +15,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -59,6 +60,9 @@ class LetterResource extends Resource
                     ->disabled()
                     ->hiddenOn('create')
                 ,
+                Forms\Components\TextInput::make('subject')
+                    ->label('موضوع')
+                    ->required(),
                 Forms\Components\Select::make('status')
                     ->options(letter::getStatusListDefine())->label('وضعیت')
                     ->hiddenOn('create')
@@ -114,55 +118,6 @@ class LetterResource extends Resource
                         ,
                     ])
                 ,
-                Forms\Components\TextInput::make('subject')
-                    ->label('موضوع')
-                    ->required(),
-                Forms\Components\Select::make('titleholder')
-                    ->label('گیرنده نامه')
-                    ->relationship(null, 'name')
-                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} - {$record->official} ، {$record->organ()->first('name')->name}")
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->label('نام')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('official')
-                            ->required()
-                            ->label('سمت'),
-                        Forms\Components\TextInput::make('phone')
-                            ->label('شماره تماس')
-                            ->tel(),
-                        Forms\Components\Select::make('organ_id')
-                            ->label('اداره')
-                            ->relationship('organ', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->label('نام')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('address')
-                                    ->label('آدرس'),
-                                Forms\Components\TextInput::make('phone')
-                                    ->label('شماره تماس')
-                                    ->tel(),
-                            ]),
-                    ]),
-                Forms\Components\Select::make('cartables')
-                    ->label('گیرنده درخواست (افزودن به کارپوشه)')
-                    ->relationship('users', 'name')
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\Select::make('peiroow_letter_id')
-                    ->label('پیرو')
-                    ->relationship('letter', 'subject')
-                    ->searchable()
-                    ->preload()
-                ,
                 FileUpload::make('file')
                     ->label('فایل')
                     ->disk('private')
@@ -172,6 +127,55 @@ class LetterResource extends Resource
                     ->preserveFilenames()
                     ->imageEditor()
                     ->hiddenOn('create'),
+
+                Section::make('امکانات بیشتر')->schema([
+                    Forms\Components\Select::make('titleholder')
+                        ->label('گیرنده نامه')
+                        ->relationship(null, 'name')
+                        ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} - {$record->official} ، {$record->organ()->first('name')->name}")
+                        ->searchable()
+                        ->preload()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->label('نام')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('official')
+                                ->required()
+                                ->label('سمت'),
+                            Forms\Components\TextInput::make('phone')
+                                ->label('شماره تماس')
+                                ->tel(),
+                            Forms\Components\Select::make('organ_id')
+                                ->label('اداره')
+                                ->relationship('organ', 'name')
+                                ->searchable()
+                                ->preload()
+                                ->required()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->label('نام')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('address')
+                                        ->label('آدرس'),
+                                    Forms\Components\TextInput::make('phone')
+                                        ->label('شماره تماس')
+                                        ->tel(),
+                                ]),
+                        ]),
+                    Forms\Components\Select::make('cartables')
+                        ->label('گیرنده درخواست (افزودن به کارپوشه)')
+                        ->relationship('users', 'name')
+                        ->searchable()
+                        ->preload(),
+                    Forms\Components\Select::make('peiroow_letter_id')
+                        ->label('پیرو')
+                        ->relationship('letter', 'subject')
+                        ->searchable()
+                        ->preload()
+                    ,
+                ])->collapsed(),
             ]);
     }
 

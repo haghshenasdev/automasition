@@ -1,36 +1,29 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CityResource\RelationManagers;
 
-use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
-use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CustomerResource extends Resource
+class CustomersRelationManager extends RelationManager
 {
-    protected static ?string $model = Customer::class;
+    protected static string $relationship = 'customers';
 
-    protected static ?string $navigationGroup = 'مراجعه کننده';
+    protected static ?string $label = 'مراجعه کننده';
 
+    protected static ?string $pluralLabel = 'مراجعه کننده';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'مراجعه کننده';
 
-    protected static ?string $label = "مراجعه کننده";
+    protected static ?string $title = 'مراجعه کننده ها';
 
-
-    protected static ?string $pluralModelLabel = "مراجعه کننده ها";
-
-    protected static ?string $pluralLabel = "مراجعه کننده";
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -65,9 +58,10 @@ class CustomerResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('name')->label('نام'),
@@ -78,8 +72,12 @@ class CustomerResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -89,21 +87,5 @@ class CustomerResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationManagers\LettersRelationManager::class,
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListCustomers::route('/'),
-            'create' => Pages\CreateCustomer::route('/create'),
-            'edit' => Pages\EditCustomer::route('/{record}/edit'),
-        ];
     }
 }
