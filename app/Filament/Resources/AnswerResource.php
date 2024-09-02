@@ -65,14 +65,14 @@ class AnswerResource extends Resource
                     ->visibility('private')
                     ->imageEditor()
                     ->required()
-                    ->getUploadedFileNameForStorageUsing( fn (TemporaryUploadedFile $file,?Model $record) => $this->getFileNamePath($file,$record))
+                    ->getUploadedFileNameForStorageUsing( fn (TemporaryUploadedFile $file,?Model $record) => self::getFileNamePath($file, $record))
                 ,
             ]);
     }
 
-    private function getFileNamePath(TemporaryUploadedFile $file,?Model $record) : string
+    private static function getFileNamePath(TemporaryUploadedFile $file,?Model $record) : string
     {
-        $letterId = $this->ownerRecord->id;
+        $letterId = $record->letter_id;
         $path = "{$letterId}/awrs";
 //        $FPath= config('filesystems.disks.private.root'). $path;
 //        File::ensureDirectoryExists($FPath);
