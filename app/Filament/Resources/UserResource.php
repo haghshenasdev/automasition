@@ -44,8 +44,13 @@ class UserResource extends Resource
                 Password::make('password')->autocomplete('new_password')
                     ->label('رمز عبور')
                     ->generatable(true)->copyable(true)
-                    ->dehydrated(fn ($state) => filled($state))
-                ,
+                    ->dehydrated(fn ($state) => filled($state)),
+                Forms\Components\Select::make('roles')
+                    ->label('تعیین دسترسی')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
             ]);
     }
 
