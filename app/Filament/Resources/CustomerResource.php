@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -70,13 +71,17 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('name')->label('نام'),
-                TextColumn::make('code_melli')->label('کد ملی'),
+                TextColumn::make('name')->label('نام')->searchable(),
+                TextColumn::make('code_melli')->label('کد ملی')->searchable(),
                 TextColumn::make('city.name')->label('شهر'),
-                TextColumn::make('phone')->label('شماره تماس'),
+                TextColumn::make('phone')->label('شماره تماس')->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('city_id')
+                    ->label('شهر')
+                    ->relationship('city', 'name')
+                    ->searchable()
+                    ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
