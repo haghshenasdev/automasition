@@ -122,6 +122,7 @@ class LetterResource extends Resource
                     ->label('فایل')
                     ->disk('private')
                     ->downloadable()
+                    ->openable()
                     ->getUploadedFileNameForStorageUsing(static fn (TemporaryUploadedFile $file,?Model $record) => "{$record->id}/{$record->id}." . explode('/',$file->getMimeType())[1])
                     ->visibility('private')
                     ->preserveFilenames()
@@ -129,49 +130,26 @@ class LetterResource extends Resource
                     ->hiddenOn('create'),
 
                 Section::make('امکانات بیشتر')->schema([
-                    Forms\Components\Select::make('titleholder')
+                    Forms\Components\Select::make('organ')
                         ->label('گیرنده نامه')
-                        ->relationship(null, 'name')
-                        ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} - {$record->official} ، {$record->organ()->first('name')->name}")
+                        ->relationship('organ', 'name')
                         ->searchable()
                         ->preload()
                         ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->required()
-                                ->label('نام')
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('official')
-                                ->required()
-                                ->label('سمت'),
-                            Forms\Components\TextInput::make('phone')
-                                ->label('شماره تماس')
-                                ->tel(),
-                            Forms\Components\Select::make('organ_id')
-                                ->label('اداره')
-                                ->relationship('organ', 'name')
-                                ->searchable()
-                                ->preload()
-                                ->required()
-                                ->createOptionForm([
-                                    Forms\Components\TextInput::make('name')
-                                        ->required()
-                                        ->label('نام')
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('address')
-                                        ->label('آدرس'),
-                                    Forms\Components\TextInput::make('phone')
-                                        ->label('شماره تماس')
-                                        ->tel(),
-                                ]),
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->label('نام')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('address')
+                                    ->label('آدرس'),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('شماره تماس')
+                                    ->tel(),
                         ]),
-                    Forms\Components\Select::make('cartables')
-                        ->label('گیرنده درخواست (افزودن به کارپوشه)')
-                        ->relationship('users', 'name')
-                        ->searchable()
-                        ->preload(),
                     Forms\Components\Select::make('peiroow_letter_id')
                         ->label('پیرو')
                         ->relationship('letter', 'subject')
+                        ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->id} - {$record->subject}")->lazy()
                         ->searchable()
                         ->preload()
                     ,

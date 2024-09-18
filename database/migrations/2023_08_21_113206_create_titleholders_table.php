@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('titleholders', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('official');
-            $table->char('phone',11)->nullable();
-            $table->foreignId('organ_id')->constrained('organs')->cascadeOnDelete();
-            $table->timestamps();
-        });
+        Schema::dropIfExists('titleholders');
+//        Schema::create('titleholders', function (Blueprint $table) {
+//            $table->id();
+//            $table->string('name');
+//            $table->string('official');
+//            $table->char('phone',11)->nullable();
+//            $table->foreignId('organ_id')->constrained('organs')->cascadeOnDelete();
+//            $table->timestamps();
+//        });
     }
 
     /**

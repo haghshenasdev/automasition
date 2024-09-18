@@ -20,7 +20,7 @@ class letter extends Model
         'type_id',
         'status',
         'user_id',
-        'titleholder_id',
+        'organ_id',
         'peiroow_letter_id',
     ];
 
@@ -49,9 +49,9 @@ class letter extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function titleholder(): BelongsTo
+    public function organ(): BelongsTo
     {
-        return $this->belongsTo(Titleholder::class);
+        return $this->belongsTo(Organ::class);
     }
 
     public function Answer(): HasMany

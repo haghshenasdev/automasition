@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('type_id')->nullable()->constrained('types')->nullOnDelete();
             $table->mediumInteger('status')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('titleholder_id')->nullable()->constrained('titleholders')->nullOnDelete();
+            $table->foreignId('organ_id')->nullable()->constrained('organs')->nullOnDelete();
             $table->foreignId('peiroow_letter_id')->nullable()->constrained('letters')->nullOnDelete();
             $table->timestamps();
         });

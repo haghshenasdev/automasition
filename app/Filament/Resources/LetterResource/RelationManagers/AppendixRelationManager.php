@@ -42,6 +42,7 @@ class AppendixRelationManager extends RelationManager
                     ->label('فایل')
                     ->disk('private')
                     ->downloadable()
+                    ->openable()
                     ->visibility('private')
                     ->imageEditor()
                     ->required()

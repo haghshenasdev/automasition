@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Cartable extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'checked'
+    ];
 }
